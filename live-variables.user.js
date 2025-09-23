@@ -21,55 +21,55 @@
 	const variablesDisplay = document.createElement("div");
 	variablesDisplay.id = "variables-display";
 	variablesDisplay.innerHTML = `
-        <div class="bg-slate-800 bg-opacity-80 text-white p-4 rounded-lg shadow-lg max-w-sm font-mono">
-            <h1 class="text-xl font-bold mb-2 text-center text-sky-400">GeoFS AI Pilot Data</h1>
-            <p id="status-message" class="text-center text-sm italic">Waiting for GeoFS to load...</p>
+        <div class="bg-slate-800 bg-opacity-80 text-white p-2 rounded-lg shadow-lg max-w-xs font-mono overflow-y-auto">
+            <h1 class="text-base font-bold mb-1 text-center text-sky-400">GeoFS AI Pilot Data</h1>
+            <p id="status-message" class="text-center text-xs italic">Waiting for GeoFS to load...</p>
 
             <div id="data-container" class="hidden">
-                <div id="position-data" class="mb-4">
-                    <h2 class="text-lg font-semibold mb-1 text-sky-200">Position & Orientation</h2>
-                    <p class="text-sm">Latitude: <span id="lat">N/A</span></p>
-                    <p class="text-sm">Longitude: <span id="lon">N/A</span></p>
-                    <p class="text-sm">Altitude (ft): <span id="altitude">N/A</span></p>
-                    <p class="text-sm">Heading (deg): <span id="heading">N/A</span></p>
-                    <p class="text-sm">Pitch (deg): <span id="pitch">N/A</span></p>
-                    <p class="text-sm">Roll (deg): <span id="roll">N/A</span></p>
+                <div id="position-data" class="mb-2">
+                    <h2 class="text-sm font-semibold mb-1 text-sky-200">Position & Orientation</h2>
+                    <p class="text-xs">Latitude: <span id="lat">N/A</span></p>
+                    <p class="text-xs">Longitude: <span id="lon">N/A</span></p>
+                    <p class="text-xs">Altitude (ft): <span id="altitude">N/A</span></p>
+                    <p class="text-xs">Heading (deg): <span id="heading">N/A</span></p>
+                    <p class="text-xs">Pitch (deg): <span id="pitch">N/A</span></p>
+                    <p class="text-xs">Roll (deg): <span id="roll">N/A</span></p>
                 </div>
 
-                <div id="speed-data" class="mb-4">
-                    <h2 class="text-lg font-semibold mb-1 text-sky-200">Speed</h2>
-                    <p class="text-sm">Ground Speed (kts): <span id="groundSpeed">N/A</span></p>
-                    <p class="text-sm">Airspeed (kts): <span id="airspeed">N/A</span></p>
-                    <p class="text-sm">Vertical Speed (ft/min): <span id="vspeed">N/A</span></p>
+                <div id="speed-data" class="mb-2">
+                    <h2 class="text-sm font-semibold mb-1 text-sky-200">Speed</h2>
+                    <p class="text-xs">Ground Speed (kts): <span id="groundSpeed">N/A</span></p>
+                    <p class="text-xs">Airspeed (kts): <span id="airspeed">N/A</span></p>
+                    <p class="text-xs">Vertical Speed (ft/min): <span id="vspeed">N/A</span></p>
                 </div>
 
-                <div id="controls-data" class="mb-4">
-                    <h2 class="text-lg font-semibold mb-1 text-sky-200">Controls</h2>
-                    <p class="text-sm">Throttle: <span id="throttle">N/A</span></p>
-                    <p class="text-sm">Pitch: <span id="pitchCtrl">N/A</span></p>
-                    <p class="text-sm">Roll: <span id="rollCtrl">N/A</span></p>
-                    <p class="text-sm">Yaw: <span id="yawCtrl">N/A</span></p>
-                    <p class="text-sm">Gear: <span id="gear">N/A</span></p>
-                    <p class="text-sm">Brakes: <span id="brakes">N/A</span></p>
-                    <p class="text-sm">Flaps: <span id="flaps">N/A</span></p>
+                <div id="controls-data" class="mb-2">
+                    <h2 class="text-sm font-semibold mb-1 text-sky-200">Controls</h2>
+                    <p class="text-xs">Throttle: <span id="throttle">N/A</span></p>
+                    <p class="text-xs">Pitch: <span id="pitchCtrl">N/A</span></p>
+                    <p class="text-xs">Roll: <span id="rollCtrl">N/A</span></p>
+                    <p class="text-xs">Yaw: <span id="yawCtrl">N/A</span></p>
+                    <p class="text-xs">Gear: <span id="gear">N/A</span></p>
+                    <p class="text-xs">Brakes: <span id="brakes">N/A</span></p>
+                    <p class="text-xs">Flaps: <span id="flaps">N/A</span></p>
                 </div>
 
-                <div id="engine-data" class="mb-4">
-                    <h2 class="text-lg font-semibold mb-1 text-sky-200">Aircraft Info</h2>
-                    <p class="text-sm">Aircraft: <span id="aircraftName">N/A</span></p>
-                    <p class="text-sm">Mass (kg): <span id="mass">N/A</span></p>
-                    <p class="text-sm">Engines: <span id="engines">N/A</span></p>
+                <div id="engine-data" class="mb-2">
+                    <h2 class="text-sm font-semibold mb-1 text-sky-200">Aircraft Info</h2>
+                    <p class="text-xs">Aircraft: <span id="aircraftName">N/A</span></p>
+                    <p class="text-xs">Mass (kg): <span id="mass">N/A</span></p>
+                    <p class="text-xs">Engines: <span id="engines">N/A</span></p>
                 </div>
 
-                <div id="environment-data" class="mb-4">
-                    <h2 class="text-lg font-semibold mb-1 text-sky-200">Environment</h2>
-                    <p class="text-sm">Wind Speed (kts): <span id="windSpeed">N/A</span></p>
-                    <p class="text-sm">Wind Direction (deg): <span id="windDirection">N/A</span></p>
+                <div id="environment-data" class="mb-2">
+                    <h2 class="text-sm font-semibold mb-1 text-sky-200">Environment</h2>
+                    <p class="text-xs">Wind Speed (kts): <span id="windSpeed">N/A</span></p>
+                    <p class="text-xs">Wind Direction (deg): <span id="windDirection">N/A</span></p>
                 </div>
 
                 <div id="runway-data">
-                    <h2 class="text-lg font-semibold mb-1 text-sky-200">Runway Info</h2>
-                    <p class="text-sm">Nearest Runway: <span id="nearestRunway">N/A</span></p>
+                    <h2 class="text-sm font-semibold mb-1 text-sky-200">Runway Info</h2>
+                    <p class="text-xs">Nearest Runway: <span id="nearestRunway">N/A</span></p>
                 </div>
             </div>
         </div>
@@ -81,10 +81,22 @@
         #variables-display {
             position: fixed;
             top: 20px;
-            right: 20px;
+            bottom: 20px;
+            left: 20px;
+            right: auto;
             z-index: 1000;
+            width: 90vw;
+            max-width: 300px;
+        }
+
+        #variables-display > div {
+            height: 100%;
+            overflow-y: auto;
         }
     `;
+
+	document.body.appendChild(variablesDisplay);
+	document.body.appendChild(style);
 
 	document.body.appendChild(variablesDisplay);
 	document.body.appendChild(style);
@@ -197,7 +209,6 @@
 			? controls.brakes.toFixed(2)
 			: "N/A";
 
-		// Raw flaps data with current/max display
 		const flapsData = {
 			flapsValue: aircraft.flapsValue,
 			animationFlaps: animation.flaps,
@@ -205,9 +216,7 @@
 			flapsTarget: aircraft.flapsTarget,
 			maxFlaps: aircraft.definition.maxFlaps || 1,
 		};
-		elements.flaps.textContent = `${flapsData.flapsValue || 0} / ${
-			flapsData.maxFlaps
-		}`;
+		elements.flaps.textContent = `${flapsData.controlsFlaps.position} / ${flapsData.controlsFlaps.maxPosition}`;
 
 		// Aircraft Info
 		elements.aircraftName.textContent = aircraft.definition.name || "N/A";
