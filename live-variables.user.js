@@ -34,6 +34,13 @@
                     <p class="text-xs">Heading (deg): <span id="heading">N/A</span></p>
                     <p class="text-xs">Pitch (deg): <span id="pitch">N/A</span></p>
                     <p class="text-xs">Roll (deg): <span id="roll">N/A</span></p>
+                    <p class="text-xs">AoA (deg): <span id="aoa">N/A</span></p>
+                    <p class="text-xs">Ground Contact: <span id="groundContact">N/A</span></p>
+                    <p class="text-xs">Water Contact: <span id="waterContact">N/A</span></p>
+                    <p class="text-xs">Crashed: <span id="crashed">N/A</span></p>
+                    <p class="text-xs">Stall: <span id="stall">N/A</span></p>
+                    <p class="text-xs">G-Force (g): <span id="gforce">N/A</span></p>
+                    <p class="text-xs">Altitude AGL (ft): <span id="agl">N/A</span></p>
                 </div>
 
                 <div id="speed-data" class="mb-2">
@@ -114,6 +121,13 @@
 		heading: document.getElementById("heading"),
 		pitch: document.getElementById("pitch"),
 		roll: document.getElementById("roll"),
+		aoa: document.getElementById("aoa"),
+		groundContact: document.getElementById("groundContact"),
+		waterContact: document.getElementById("waterContact"),
+		crashed: document.getElementById("crashed"),
+		stall: document.getElementById("stall"),
+		gforce: document.getElementById("gforce"),
+		agl: document.getElementById("agl"),
 		groundSpeed: document.getElementById("groundSpeed"),
 		airspeed: document.getElementById("airspeed"),
 		vspeed: document.getElementById("vspeed"),
@@ -171,7 +185,47 @@
 			? animation.aroll.toFixed(10)
 			: "N/A";
 
-		// Speed (reverted to working version)
+		// New variables: AoA, Ground Contact, Water Contact, Crashed, Stall, G-force
+		elements.aoa.textContent =
+			aircraft.angleOfAttackDeg !== undefined
+				? aircraft.angleOfAttackDeg.toFixed(2)
+				: "N/A";
+		elements.groundContact.textContent =
+			aircraft.groundContact !== undefined
+				? aircraft.groundContact
+					? "Yes"
+					: "No"
+				: "N/A";
+		elements.waterContact.textContent =
+			aircraft.waterContact !== undefined
+				? aircraft.waterContact
+					? "Yes"
+					: "No"
+				: "N/A";
+		elements.crashed.textContent =
+			aircraft.crashed !== undefined
+				? aircraft.crashed
+					? "Yes"
+					: "No"
+				: "N/A";
+		elements.stall.textContent =
+			aircraft.stalling !== undefined
+				? aircraft.stalling
+					? "Yes"
+					: "No"
+				: "N/A";
+		elements.gforce.textContent =
+			animation.accZ !== undefined
+				? (animation.accZ / 9.80665).toFixed(2)
+				: "N/A";
+
+		// AGL calculation using geofs.groundElevation
+		elements.agl.textContent =
+			animation.altitude !== undefined && geofs.groundElevation !== undefined
+				? (animation.altitude - geofs.groundElevation).toFixed(2)
+				: "N/A";
+
+		// Speed
 		elements.groundSpeed.textContent = animation.groundSpeed
 			? animation.groundSpeed.toFixed(2)
 			: "N/A";
@@ -231,7 +285,7 @@
 		};
 		elements.flaps.textContent = `${flapsData.controlsFlaps.position} / ${flapsData.controlsFlaps.maxPosition}`;
 
-		// Aircraft Info (adjusted to debug name access)
+		// Aircraft Info
 		elements.aircraftName.textContent =
 			getNested(geofs, "aircraft", "instance", "aircraftRecord", "name") ||
 			"N/A";
@@ -274,16 +328,22 @@
 				aircraft.llaLocation
 			);
 			if (nearestRunway) {
-				const distance = geofs.utils.distanceBetweenLocations(
+				const distance1 = geofs.utils.distanceBetweenLocations(
 					aircraft.llaLocation,
 					nearestRunway.aimingPointLla1
 				);
-				const testDist = geofs.utils.distanceBetweenLocations(
+				const distance2 = geofs.utils.distanceBetweenLocations(
 					aircraft.llaLocation,
 					nearestRunway.aimingPointLla2
 				);
-				const finalDist = Math.min(distance, testDist);
+				const finalDist = Math.min(distance1, distance2) / 1852; // Convert meters to nm
 				elements.nearestRunway.textContent = `${finalDist.toFixed(10)}nm`;
+				console.log(
+					"Raw distance (meters):",
+					Math.min(distance1, distance2),
+					"Converted (nm):",
+					finalDist
+				); // Log for debugging
 			} else {
 				elements.nearestRunway.textContent = "No runway found";
 			}
