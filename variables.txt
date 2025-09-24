@@ -1,0 +1,43 @@
+GeoFS Live Variable Display - Variable Reference
+Last updated: September 24, 2025
+
+Position & Orientation
+- Latitude: aircraft.llaLocation[0] (degrees, decimal)
+- Longitude: aircraft.llaLocation[1] (degrees, decimal)
+- Altitude (ft): animation.altitude (feet above mean sea level)
+- Heading (deg): animation.heading (degrees)
+- Pitch (deg): animation.atilt (degrees)
+- Roll (deg): animation.aroll (degrees)
+- AoA (deg): aircraft.angleOfAttackDeg (degrees)
+- Ground Contact: aircraft.groundContact (boolean)
+- Water Contact: aircraft.waterContact (boolean)
+- Crashed: aircraft.crashed (boolean)
+- Stall: aircraft.stalling (boolean)
+- G-Force (g): animation.accZ / 9.80665 (g-force, normalized from m/s²)
+- Altitude AGL (ft): animation.altitude - geofs.groundElevation (feet above ground level)
+
+Speed
+- Ground Speed (kts): animation.groundSpeed (knots)
+- Airspeed (kts): animation.kias (knots, indicated airspeed)
+- Vertical Speed (ft/min): animation.verticalSpeed (feet per minute)
+
+Controls
+- Throttle: controls.throttle (0 to 1)
+- Pitch: controls.pitch (control input, -1 to 1)
+- Roll: controls.roll (control input, -1 to 1)
+- Yaw: controls.yaw (control input, -1 to 1)
+- Gear: controls.gear.position (0 = DOWN, 1 = UP, intermediate = Transition)
+- Brakes: controls.brakes (0 to 1)
+- Flaps: controls.flaps.position / controls.flaps.maxPosition (current/max position)
+
+Aircraft Info
+- Aircraft: geofs.aircraft.instance.aircraftRecord.name (string)
+- Mass (kg): aircraft.definition.mass (kilograms)
+- Engines: aircraft.engines[index].rpm (RPM) or aircraft.engines[index].thrust (kN)
+
+Environment
+- Wind Speed (kts): weather.currentWindSpeed (knots)
+- Wind Direction (deg): weather.currentWindDirection (degrees)
+
+Runway Info
+- Nearest Runway: geofs.utils.distanceBetweenLocations(aircraft.llaLocation, nearestRunway.aimingPointLla1 or aimingPointLla2) / 1852 (nautical miles, converted from meters)
