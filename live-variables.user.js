@@ -153,22 +153,22 @@
 
 		// Position & Orientation - Fixed lat/lon access
 		elements.lat.textContent = aircraft.llaLocation
-			? aircraft.llaLocation[0].toFixed(4)
+			? aircraft.llaLocation[0].toFixed(10)
 			: "N/A";
 		elements.lon.textContent = aircraft.llaLocation
-			? aircraft.llaLocation[1].toFixed(4)
+			? aircraft.llaLocation[1].toFixed(10)
 			: "N/A";
 		elements.altitude.textContent = animation.altitude
-			? animation.altitude.toFixed(2)
+			? animation.altitude.toFixed(10)
 			: "N/A";
 		elements.heading.textContent = animation.heading
-			? animation.heading.toFixed(2)
+			? animation.heading.toFixed(10)
 			: "N/A";
 		elements.pitch.textContent = animation.atilt
-			? animation.atilt.toFixed(2)
+			? animation.atilt.toFixed(10)
 			: "N/A";
 		elements.roll.textContent = animation.aroll
-			? animation.aroll.toFixed(2)
+			? animation.aroll.toFixed(10)
 			: "N/A";
 
 		// Speed (reverted to working version)
@@ -203,12 +203,25 @@
 			controlsGear: controls.gear,
 			gearTarget: aircraft.gearTarget,
 		};
-		elements.gear.textContent = `Raw: ${JSON.stringify(gearData)}`;
+
+		let gearStatus;
+		const position = gearData.controlsGear.position;
+
+		if (position === 1) {
+			gearStatus = "UP";
+		} else if (position === 0) {
+			gearStatus = "DOWN";
+		} else {
+			gearStatus = "Transition";
+		}
+
+		elements.gear.textContent = `Status: ${gearStatus}`;
 
 		elements.brakes.textContent = controls.brakes
 			? controls.brakes.toFixed(2)
 			: "N/A";
 
+		// Raw flaps data with current/max display
 		const flapsData = {
 			flapsValue: aircraft.flapsValue,
 			animationFlaps: animation.flaps,
@@ -218,8 +231,10 @@
 		};
 		elements.flaps.textContent = `${flapsData.controlsFlaps.position} / ${flapsData.controlsFlaps.maxPosition}`;
 
-		// Aircraft Info
-		elements.aircraftName.textContent = aircraft.definition.name || "N/A";
+		// Aircraft Info (adjusted to debug name access)
+		elements.aircraftName.textContent =
+			getNested(geofs, "aircraft", "instance", "aircraftRecord", "name") ||
+			"N/A";
 		elements.mass.textContent = aircraft.definition.mass
 			? aircraft.definition.mass.toFixed(2)
 			: "N/A";
@@ -242,12 +257,16 @@
 		}
 
 		// Environment
-		elements.windSpeed.textContent = geofs.wind
-			? geofs.wind.speed.toFixed(2)
-			: "N/A";
-		elements.windDirection.textContent = geofs.wind
-			? geofs.wind.direction.toFixed(2)
-			: "N/A";
+		elements.windSpeed.textContent =
+			getNested(window, "weather", "currentWindSpeed") !== null &&
+			typeof weather.currentWindSpeed === "number"
+				? weather.currentWindSpeed.toFixed(2)
+				: "N/A";
+		elements.windDirection.textContent =
+			getNested(window, "weather", "currentWindDirection") !== null &&
+			typeof weather.currentWindDirection === "number"
+				? weather.currentWindDirection.toFixed(2)
+				: "N/A";
 
 		// Runway Information
 		try {
@@ -264,9 +283,7 @@
 					nearestRunway.aimingPointLla2
 				);
 				const finalDist = Math.min(distance, testDist);
-				elements.nearestRunway.textContent = `${
-					nearestRunway.name
-				} (${finalDist.toFixed(1)}nm)`;
+				elements.nearestRunway.textContent = `${finalDist.toFixed(10)}nm`;
 			} else {
 				elements.nearestRunway.textContent = "No runway found";
 			}
