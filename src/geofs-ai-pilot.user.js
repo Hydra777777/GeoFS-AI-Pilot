@@ -3,7 +3,7 @@
 // @namespace   http://tampermonkey.net/
 // @version     0.1
 // @description AI fly plane
-// @author      Hydra + Lots of AI Models
+// @author      Hydra
 // @match       https://www.geo-fs.com/geofs.php?v=3.9*
 // @grant       none
 // @run-at      document-idle
@@ -35,7 +35,7 @@
                 <h1 class="text-base font-bold mb-1 text-center text-sky-400">AI Pilot</h1>
                 <p id="status" class="text-center text-xs italic">Idle</p>
                 <div id="prompt-container" class="mt-2" contenteditable="true" placeholder="Enter command (e.g., take off)"
-                    style="outline: none; border: 1px solid #4B5563; padding: 4px; min-height: 20px; background: white; color: black;"></div>
+                    style="outline: none; border: 2px solid #4B5563; padding: 4px; min-height: 20px; background: white; color: black; border-radius: 6px;"></div>
                 <button id="submit-prompt" class="w-full mt-2 bg-sky-500 hover:bg-sky-700 text-white p-1 rounded">Submit</button>
                 <button id="toggle-ai" class="w-full mt-2 bg-gray-500 hover:bg-gray-700 text-white p-1 rounded">Toggle AI (Ctrl+A)</button>
                 <div id="key-setup" class="hidden mt-2">
@@ -50,7 +50,11 @@
 		const style = document.createElement("style");
 		style.innerHTML = `
             #ai-pilot-ui { z-index: 1002; }
-            #prompt-container:focus { outline: 2px solid #4B5563; }
+            #prompt-container:focus {
+                outline: none;
+                border: 2px solid #38BDF8; /* Sky blue border */
+                box-shadow: 0 0 8px #38BDF8; /* Glow effect */
+            }
             [contenteditable]:empty::before {
                 content: attr(placeholder);
                 pointer-events: none;
@@ -223,40 +227,42 @@
 		}
 		update();
 
-		// Event Handlers
-		document.getElementById("submit-prompt").onclick = () => {
+		// Submit Handler
+		function handleSubmit() {
 			const promptContainer = document.getElementById("prompt-container");
 			const prompt = promptContainer.textContent.trim();
-			if (prompt) {
-				currentMode = "executing";
-				const aircraft = geofs.aircraft.instance;
-				const animation = geofs.animation.values;
-				const [lat, lon] = aircraft.llaLocation || [0, 0];
-				const agl = (animation.altitude || 0) - (geofs.groundElevation || 0);
-				const nearestAirport = findNearestAirport(lat, lon);
-				const nearestRunway = findNearestRunway(lat, lon);
-				const context = `Aircraft: ${
-					aircraft.aircraftRecord.name || "Unknown"
-				}, Lat: ${lat}, Lon: ${lon}, AGL: ${agl.toFixed(1)}ft, Speed: ${
-					animation.kias || 0
-				}kts, Nearest Airport: ${nearestAirport || "N/A"}, Nearest Runway: ${
-					nearestRunway ? nearestRunway.icao : "N/A"
-				}`;
+			if (!prompt) return; // block empty queries
 
-				callHuggingFace(prompt, context).then((response) => {
-					if (response) {
-						cachedResponse = response;
-						if (response.toLowerCase().includes("take off")) {
-							currentMode = "takeoff";
-							if (controls && controls.throttle) controls.throttle = 1.0;
-						} else if (response.toLowerCase().includes("land")) {
-							currentMode = "land";
-						}
+			currentMode = "executing";
+			const aircraft = geofs.aircraft.instance;
+			const animation = geofs.animation.values;
+			const [lat, lon] = aircraft.llaLocation || [0, 0];
+			const agl = (animation.altitude || 0) - (geofs.groundElevation || 0);
+			const nearestAirport = findNearestAirport(lat, lon);
+			const nearestRunway = findNearestRunway(lat, lon);
+			const context = `Aircraft: ${
+				aircraft.aircraftRecord.name || "Unknown"
+			}, Lat: ${lat}, Lon: ${lon}, AGL: ${agl.toFixed(1)}ft, Speed: ${
+				animation.kias || 0
+			}kts, Nearest Airport: ${nearestAirport || "N/A"}, Nearest Runway: ${
+				nearestRunway ? nearestRunway.icao : "N/A"
+			}`;
+
+			callHuggingFace(prompt, context).then((response) => {
+				if (response) {
+					cachedResponse = response;
+					if (response.toLowerCase().includes("take off")) {
+						currentMode = "takeoff";
+						if (controls && controls.throttle) controls.throttle = 1.0;
+					} else if (response.toLowerCase().includes("land")) {
+						currentMode = "land";
 					}
-				});
-				promptContainer.textContent = "";
-			}
-		};
+				}
+			});
+			promptContainer.textContent = "";
+		}
+
+		document.getElementById("submit-prompt").onclick = handleSubmit;
 
 		document.getElementById("toggle-ai").onclick = () => {
 			isActive = !isActive;
@@ -273,13 +279,27 @@
 				if (promptContainer === document.activeElement) {
 					// Always block GeoFS from receiving keystrokes while focused
 					e.stopImmediatePropagation();
-					// But only preventDefault for non-editing keys so typing works
+
+					// Escape: exit textbox
+					if (e.key === "Escape") {
+						promptContainer.blur();
+						e.preventDefault();
+						return;
+					}
+
+					// Enter: submit if not empty
+					if (e.key === "Enter") {
+						e.preventDefault();
+						handleSubmit();
+						return;
+					}
+
+					// Block non-text editing keys from interfering
 					if (
 						!(
 							e.key.length === 1 ||
 							e.key === "Backspace" ||
 							e.key === "Delete" ||
-							e.key === "Enter" ||
 							e.key.startsWith("Arrow")
 						)
 					) {
